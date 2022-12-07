@@ -1,48 +1,52 @@
-import { useState } from 'react';
+// import { useState } from 'react';
 import { nanoid } from 'nanoid';
 import css from './ContactForm.module.css';
+import { useDispatch, useSelector } from 'react-redux';
+import { getContacts } from 'redux/selectors';
+import { addContact } from 'redux/contactsSlice';
 
-const KEY = {
-  name: 'name',
-  number: 'number',
-};
+// const KEY = {
+//   name: 'name',
+//   number: 'number',
+// };
 
 export default function ContactForm({items, addContactsProps}) {
-  const [nameInput, setNameInput] = useState('');
-  const [number, setNumber] = useState('');
+  // const [nameInput, setNameInput] = useState('');
+  // const [number, setNumber] = useState('');
+  const contacts = useSelector(getContacts);
+  const dispatch = useDispatch();
+
+  console.log(contacts);
 
   const nameInputId = nanoid();
   const telInputId = nanoid();
 
-  const handleChange = e => {
-    const { name, value } = e.target;
+  // const handleChange = e => {
+  //   const { name, value } = e.target;
 
-    switch (name) {
-      case KEY.name:
-        setNameInput(value)
-        break;
-      case KEY.number:
-        setNumber(value)
-        break;
-      default:
-        console.log('Sorry, we are out of ' + name + '.');
-        return;
-    }
-    // this.setState({ [e.target.name]: e.target.value });
-  };
+  //   switch (name) {
+  //     case KEY.name:
+  //       setNameInput(value)
+  //       break;
+  //     case KEY.number:
+  //       setNumber(value)
+  //       break;
+  //     default:
+  //       console.log('Sorry, we are out of ' + name + '.');
+  //       return;
+  //   }
+  // };
 
   const handleSubmit = e => {
     e.preventDefault();
-    // const name = e.target.name;
 
+    const form = e.currentTarget;
     let presentContact = false;
 
-    items.map(({name}) => {
-      if (name === nameInput) {
+    contacts.map(({name}) => {
+      if (name === form.name.value) {
 
-        setNameInput('');
-        setNumber('');
-        // this.setState({ name: '', number: '' });
+        form.reset();
 
         presentContact = true;
         return alert(`${name} is already in contacts`);
@@ -52,20 +56,9 @@ export default function ContactForm({items, addContactsProps}) {
     });
 
     if (!presentContact) {
-      // console.log('name', e.target.name.value);
-      // console.log('name+', e.target.value);
-      // console.log('number', e.target.number.value);
-      setNameInput(e.target.value);
-      setNumber(e.target.value);
-      // this.setState({ [e.target.name]: e.target.value });
+      dispatch(addContact(form.name.value, form.number.value));
 
-
-      addContactsProps(nameInput, number, nanoid());
-      console.log('nameInput', nameInput);
-
-      setNameInput('');
-      setNumber('');
-    // this.setState({ name: '', number: '' });
+      form.reset();
     }
   };
 
@@ -81,9 +74,9 @@ export default function ContactForm({items, addContactsProps}) {
             title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
             required
             id={nameInputId}
-            value={nameInput}
+            // value={nameInput}
             placeholder="Alex Krom"
-            onChange={handleChange}
+            // onChange={handleChange}
           />
         </label>
 
@@ -97,9 +90,9 @@ export default function ContactForm({items, addContactsProps}) {
             title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
             required
             id={telInputId}
-            value={number}
+            // value={number}
             placeholder="227-91-26"
-            onChange={handleChange}
+            // onChange={handleChange}
           />
         </label>
 
